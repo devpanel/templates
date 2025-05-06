@@ -1,0 +1,7 @@
+/administrator/cache/*
+/administrator/logs/*
+/tmp/*
+/.readme.txt
+/installation
+/configuration.php
+/images/*

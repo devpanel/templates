@@ -1,0 +1,37 @@
+version: "1.0"
+spec:
+  servicePort: 80
+  hostname: ""
+  sharedDir:
+    path: /var/www/html
+    storage: '2Gi'
+  podTemplate:
+    containers:
+      - name: php
+        image: 'wodby/wordpress-php:7.4-dev'
+        env:
+          - name: "APP_ROOT"
+            value: "/var/www/html"
+          - name: "PHP_SESSION_SAVE_HANDLER"
+            value: "files"
+          - name: "PHP_SESSION_SAVE_PATH"
+            value: "/var/www/session"
+          - name: "PHP_FPM_CLEAR_ENV"
+            value: "no"
+        ports:
+          - containerPort: 9000
+            name: fastcgi
+      - name: nginx
+        image: 'wodby/nginx:latest'
+        env:
+          - name: NGINX_SERVER_ROOT
+            value: "/var/www/html"
+          - name: "NGINX_VHOST_PRESET"
+            value: "wordpress"
+          - name: NGINX_BACKEND_HOST
+            value: '0.0.0.0'
+        ports:
+          - containerPort: 80
+            name: http
+          - containerPort: 443
+            name: https

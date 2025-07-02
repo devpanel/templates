@@ -20,24 +20,22 @@ if [[ ! -n "$WEB_ROOT" ]]; then
   export WEB_ROOT=$APP_ROOT
 fi
 
-#== Composer install.
-
 if [[ ! -f "$WEB_ROOT/package.json" ]]; then
   npm init -y
   npm install express
-  cat > index.js << 'EOF'
-  const express = require('express');
-  const app = express();
-  const PORT = process.env.PORT || '3000';
+  cat > index.js << EOF
+const express = require('express');
+const app = express();
+const port = '3000';
 
-  app.get('/', (req, res) => {
-    res.send('ExpressJs!');
-  });
+app.get('/', (req, res) => {
+  res.send('ExpressJs App!');
+});
 
-  app.listen(port, () => {
-    console.log(`🚀 Server ready at ${PORT}`);
-  });
-  EOF
+app.listen(port, () => {
+  console.log('🚀 Server ready at ', port);
+});
+EOF
   
   node index.js
   fg %1

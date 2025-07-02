@@ -22,6 +22,23 @@ fi
 
 #== Composer install.
 
-if [[ ! -f "$WEB_ROOT/index.html" ]]; then
-  sudo cp $APP_ROOT/.devpanel/index.html "$WEB_ROOT/index.html"
+if [[ ! -f "$WEB_ROOT/package.json" ]]; then
+  npm init -y
+  npm install express
+  cat > index.js << 'EOF'
+  const express = require('express');
+  const app = express();
+  const PORT = process.env.PORT || '3000';
+
+  app.get('/', (req, res) => {
+    res.send('ExpressJs!');
+  });
+
+  app.listen(port, () => {
+    console.log(`🚀 Server ready at ${PORT}`);
+  });
+  EOF
+  
+  node index.js
+  fg %1
 fi

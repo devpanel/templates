@@ -15,7 +15,7 @@
 # For GNU Affero General Public License see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------
 
-#== If webRoot has not been difined, we will set appRoot to webRoot
+#== If webRoot has not been defined, we will set appRoot to webRoot
 if [[ ! -n "$WEB_ROOT" ]]; then
   export WEB_ROOT=$APP_ROOT
 fi
@@ -36,7 +36,4 @@ app.listen(port, () => {
   console.log('🚀 Server ready at ', port);
 });
 EOF
-  
-  node index.js
-  fg %1
 fi

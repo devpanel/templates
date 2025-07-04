@@ -15,7 +15,7 @@
 # For GNU Affero General Public License see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------
 
-if [[ ! -f "$APP_ROOT/package.json" ]]; then
+if [[ ! -f "$WEB_ROOT/package.json" ]]; then
   npm init -y
   npm install express
   cat > index.js << EOF
@@ -33,6 +33,6 @@ app.listen(port, () => {
 EOF
 fi
 
-if [[ -f "$APP_ROOT/package.json" ]]; then
-  cd $APP_ROOT && npm install;
+if [[ -f "$WEB_ROOT/package.json" ]]; then
+  cd $WEB_ROOT && npm install;
 fi

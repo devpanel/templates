@@ -15,12 +15,7 @@
 # For GNU Affero General Public License see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------
 
-#== If webRoot has not been defined, we will set appRoot to webRoot
-if [[ ! -n "$WEB_ROOT" ]]; then
-  export WEB_ROOT=$APP_ROOT
-fi
-
-if [[ ! -f "$WEB_ROOT/package.json" ]]; then
+if [[ ! -f "$APP_ROOT/package.json" ]]; then
   npm init -y
   npm install express
   cat > index.js << EOF
@@ -36,4 +31,8 @@ app.listen(port, () => {
   console.log('🚀 Server ready at ', port);
 });
 EOF
+fi
+
+if [[ -f "$APP_ROOT/package.json" ]]; then
+  cd $APP_ROOT && npm install;
 fi

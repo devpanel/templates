@@ -1,0 +1,51 @@
+image: docker:latest
+
+services:
+  - docker:dind
+  - mysql:8.0
+
+variables:
+  DP_APP_ID: 'umami'
+  APP_ROOT: '/var/www/html'
+  WEB_ROOT: '/var/www/html/web'
+  CODES_USER_DATA_DIR: '/var/www/html/.vscode'
+  CODES_WORKING_DIR: '/var/www/html'
+  APACHE_RUN_USER: 'www'
+  APACHE_RUN_GROUP: 'www'
+  CODES_ENABLE: 'no'
+  DB_HOST: 'mysql'
+  DB_PORT: '3306'
+  DB_ROOT_PASSWORD: 'root'
+  DB_NAME: 'drupaldb'
+  DB_USER: 'user'
+  DB_PASSWORD: 'password'
+  DB_DRIVER: 'mysql'
+  DELEGATE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+stages:
+  - build
+
+before_script:
+  - echo "Setting up environment..."
+  - docker info
+
+build_application:
+  stage: build
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker login https://gitlab.com:443/v2 -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+  script:
+    - echo "Setting up Drupal environment"
+    - docker pull devpanel/php:8.2-base
+    - docker run -d --name webserver --env-file <(env | grep DP_) -v $CI_PROJECT_DIR:/app devpanel/php:8.3-base
+    - docker exec webserver bash -c "ls \$APP_ROOT/." 
+    - docker exec webserver bash -c "sudo rm -rf \$APP_ROOT && sudo mkdir -p \$APP_ROOT"
+    - docker exec webserver bash -c "ls /app" 
+    - docker exec webserver bash -c "sudo cp -r /app/. \$APP_ROOT/." 
+    - docker exec webserver bash -c "sudo chown -R www:www \$APP_ROOT"
+    - docker exec webserver bash -c "mkdir -p \$APP_ROOT/.git/hook"
+    - docker exec webserver bash -c "ls \$APP_ROOT/."
+    - docker exec webserver bash -c "cd \$APP_ROOT && bash .devpanel/custom_package_installer.sh"
+    - docker exec webserver bash -c "cd \$APP_ROOT && bash .devpanel/re-config.sh"
+    - docker commit webserver $DELEGATE_TAG
+    - docker push $DELEGATE_TAG

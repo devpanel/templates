@@ -26,3 +26,23 @@ fi
 if [[ ! -n "$WEB_ROOT" ]]; then
   export WEB_ROOT=$APP_ROOT
 fi
+
+cd $APP_ROOT
+composer install
+mkdir files
+sudo chown -R $APACHE_RUN_USER:$APACHE_RUN_GROUP public/ files/
+
+echo ">>> Install shopware package";
+sudo -E bin/console system:install --basic-setup --force
+
+echo ">>> allow-plugins";
+composer config --no-plugins allow-plugins.php-http/discovery true
+
+echo ">>> Install dev-tools";
+composer require --dev shopware/dev-tools
+
+echo ">>> Import database";
+bin/console framework:demodata
+bin/console dal:refresh:index
+bin/console cache:clear
+echo ">>> Successful, please refresh your web page.";
